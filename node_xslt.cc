@@ -14,6 +14,9 @@
 
 using namespace v8;
 
+static int xmlParserOpt = XML_PARSE_NOENT | XML_PARSE_NOCDATA | XML_PARSE_DTDLOAD;
+static int htmlParserOpt = HTML_PARSE_NOWARNING | HTML_PARSE_NOIMPLIED;
+
 Handle<Value> useErrors = v8::Boolean::New(false);
 
 void jsXmlDocCleanup(Persistent<Value> value, void *) {
@@ -58,9 +61,7 @@ FUNCTION(readXmlFile)
     xmlDocPtr doc = xmlReadFile(
         *str, 
         "UTF-8", 
-        useErrors->BooleanValue() 
-            ? XML_PARSE_RECOVER | XML_PARSE_NOERROR
-            : 0);
+        xmlParserOpt | (useErrors->BooleanValue() ? XML_PARSE_RECOVER | XML_PARSE_NOERROR : 0));
     if (!doc) {
         return JS_ERROR("Failed to parse XML");
     }
@@ -76,9 +77,7 @@ FUNCTION(readXmlString)
         str.length(), 
         NULL, 
         "UTF-8", 
-        useErrors->BooleanValue()
-            ? XML_PARSE_RECOVER | XML_PARSE_NOERROR
-            : 0);
+        xmlParserOpt | (useErrors->BooleanValue() ? XML_PARSE_RECOVER | XML_PARSE_NOERROR : 0));
     if (!doc) {
         return JS_ERROR("Failed to parse XML");
     }
@@ -92,9 +91,7 @@ FUNCTION(readHtmlFile)
     htmlDocPtr doc = htmlReadFile(
         *str, 
         "UTF-8", 
-        useErrors->BooleanValue() 
-            ? HTML_PARSE_RECOVER | HTML_PARSE_NOERROR
-            : HTML_PARSE_RECOVER
+        htmlParserOpt | (useErrors->BooleanValue() ? HTML_PARSE_RECOVER | HTML_PARSE_NOERROR : 0)
     );
 
     if (!doc) {
@@ -112,9 +109,7 @@ FUNCTION(readHtmlString)
         str.length(), 
         NULL, 
         "UTF-8", 
-        useErrors->BooleanValue()
-            ? HTML_PARSE_RECOVER | HTML_PARSE_NOERROR
-            : HTML_PARSE_RECOVER
+        htmlParserOpt | (useErrors->BooleanValue() ? HTML_PARSE_RECOVER | HTML_PARSE_NOERROR : 0)
     );
     
     if (!doc) {
@@ -127,7 +122,7 @@ FUNCTION(readXsltFile)
     ARG_COUNT(1)
     ARG_utf8(str, 0)
 
-    xmlDocPtr doc = xmlReadFile(*str, "UTF-8", 0);
+    xmlDocPtr doc = xmlReadFile(*str, "UTF-8", XML_PARSE_NOENT | XML_PARSE_NOCDATA | XML_PARSE_DTDLOAD);
     if (!doc) {
         return JS_ERROR("Failed to parse XML");
     }
