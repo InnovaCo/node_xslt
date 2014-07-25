@@ -1,6 +1,7 @@
 #include <node.h>
 #include <v8.h>
 #include <libxml/HTMLparser.h>
+#include <libxml/xinclude.h>
 #include <libxslt/xslt.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
@@ -14,7 +15,7 @@
 
 using namespace v8;
 
-static int xmlParserOpt = XML_PARSE_NOENT | XML_PARSE_NOCDATA | XML_PARSE_DTDLOAD;
+static int xmlParserOpt = XML_PARSE_NOENT | XML_PARSE_NOCDATA | XML_PARSE_DTDLOAD | XML_PARSE_XINCLUDE;
 static int htmlParserOpt = HTML_PARSE_NOWARNING | HTML_PARSE_NOIMPLIED;
 
 Handle<Value> useErrors = v8::Boolean::New(false);
@@ -65,6 +66,11 @@ FUNCTION(readXmlFile)
     if (!doc) {
         return JS_ERROR("Failed to parse XML");
     }
+
+    if (xmlParserOpt & XML_PARSE_XINCLUDE && xmlXIncludeProcess(doc) < 0) {
+        return JS_ERROR("XInclude processing failed");
+    }
+
     RETURN_SCOPED(jsXmlDoc(doc));
 END
 
@@ -81,6 +87,11 @@ FUNCTION(readXmlString)
     if (!doc) {
         return JS_ERROR("Failed to parse XML");
     }
+
+    if (xmlParserOpt & XML_PARSE_XINCLUDE && xmlXIncludeProcess(doc) < 0) {
+        return JS_ERROR("XInclude processing failed");
+    }
+
     RETURN_SCOPED(jsXmlDoc(doc));
 END
 
