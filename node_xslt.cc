@@ -67,9 +67,9 @@ FUNCTION(readXmlFile)
         return JS_ERROR("Failed to parse XML");
     }
 
-    if (xmlParserOpt & XML_PARSE_XINCLUDE && xmlXIncludeProcess(doc) < 0) {
-        return JS_ERROR("XInclude processing failed");
-    }
+    // if (xmlParserOpt & XML_PARSE_XINCLUDE && xmlXIncludeProcess(doc) < 0) {
+    //     return JS_ERROR("XInclude processing failed");
+    // }
 
     RETURN_SCOPED(jsXmlDoc(doc));
 END
@@ -88,9 +88,9 @@ FUNCTION(readXmlString)
         return JS_ERROR("Failed to parse XML");
     }
 
-    if (xmlParserOpt & XML_PARSE_XINCLUDE && xmlXIncludeProcess(doc) < 0) {
-        return JS_ERROR("XInclude processing failed");
-    }
+    // if (xmlParserOpt & XML_PARSE_XINCLUDE && xmlXIncludeProcess(doc) < 0) {
+    //     return JS_ERROR("XInclude processing failed");
+    // }
 
     RETURN_SCOPED(jsXmlDoc(doc));
 END
